@@ -1,8 +1,15 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Header from "./Header";
+
 function Layout (){
     return (
-        <h1>
-            Layout 
-        </h1>
+       <>
+       <Header/>
+       <main className="main-content">
+        <Outlet/>
+       </main>
+       </>
     )
 }
 export default Layout;

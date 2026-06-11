@@ -1,10 +1,16 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
+import { createBrowserRouter, RouterProvider, Suspense } from "react-router-dom";
+import { lazy } from "react";
+import Layout from "./components/Layout";
 const router = createBrowserRouter([
   {
     path:'/',
-    element: <div> Placeholder - Layout goes here </div>,
-  },
+    element:<Layout/>,
+    children: [{
+      index: true,
+      element: <div>Product List coming soon...</div>, 
+    },
+  ],
+ },
 ])
 
 function App(){
