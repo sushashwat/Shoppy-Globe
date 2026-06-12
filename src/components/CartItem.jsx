@@ -42,6 +42,7 @@ function CartItem({item}) {
     )
 }
 
+// PropTypes ensure component receives correct data shape 
 CartItem.propTypes = {
     item: PropTypes.shape({
         id: PropTypes.number.isRequired,
