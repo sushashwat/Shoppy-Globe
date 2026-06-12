@@ -1,0 +1,124 @@
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { selectCartItems, selectCartTotal, clearCart } from "../redux/cartSlice";
+import { func } from "prop-types";
+
+function Checkout() {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const items = useSelector(selectCartItems)
+    const subtotal = useSelector(selectCartTotal)
+    const tax = subtotal * 0.1
+    const [ordered, setOrdered] = useState(false)
+
+    const [form, setForm] = useState({
+        name: '', email: '', phone: '', address: '', city: '', zip: '',
+        card: '', expiry: '', cvv: '',
+    })
+
+    function handleChange(e) {
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    }
+
+
+    function handlePlaceOrder() {
+        setOrdered(true)
+        dispatch(clearCart())
+        setTimeout(() => navigate('/'), 2500)
+    }
+
+
+  if (ordered) {
+    return (
+      <div className="checkout-page">
+        <div className="order-success">
+          <div className="success-icon">✓</div>
+          <h2 className="success-title">Order Placed!</h2>
+          <p className="success-msg">Thank you for your purchase. Redirecting...</p>
+        </div>
+      </div>
+    )
+  }
+
+
+
+  return (
+    <div className="checkout-page">
+      <h1 className="page-title">Checkout</h1>
+
+      <div className="checkout-grid">
+        <div className="form-section">
+          <p className="form-title">Shipping Details</p>
+
+          <div className="form-group">
+            <label className="form-label">Full Name</label>
+            <input className="form-input" name="name" value={form.name} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input className="form-input" type="email" name="email" value={form.email} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Phone</label>
+            <input className="form-input" type="tel" name="phone" value={form.phone} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Address</label>
+            <input className="form-input" name="address" value={form.address} onChange={handleChange} />
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">City</label>
+              <input className="form-input" name="city" value={form.city} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">PIN Code</label>
+              <input className="form-input" name="zip" value={form.zip} onChange={handleChange} />
+            </div>
+          </div>
+
+          <p className="form-title" style={{ marginTop: '1.5rem' }}>Payment</p>
+          <div className="form-group">
+            <label className="form-label">Card Number</label>
+            <input className="form-input" name="card" value={form.card} onChange={handleChange} />
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Expiry</label>
+              <input className="form-input" name="expiry" value={form.expiry} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">CVV</label>
+              <input className="form-input" name="cvv" value={form.cvv} onChange={handleChange} />
+            </div>
+          </div>
+
+          <button className="place-order-btn" onClick={handlePlaceOrder}>
+            ✓ Place Order
+          </button>
+        </div>
+
+        <div className="form-section">
+          <p className="form-title">Order Summary</p>
+          {items.map(item => (
+            <div key={item.id} className="checkout-summary-item">
+              <img className="checkout-item-img" src={item.thumbnail} alt={item.title} loading="lazy" />
+              <span className="checkout-item-name">{item.title} ×{item.qty}</span>
+              <span className="checkout-item-subtotal">${(item.price * item.qty).toFixed(2)}</span>
+            </div>
+          ))}
+          <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #ccc' }}>
+            <div className="summary-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+            <div className="summary-row"><span>Tax (10%)</span><span>${tax.toFixed(2)}</span></div>
+            <div className="summary-total"><span>Total</span><span>${(subtotal + tax).toFixed(2)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Checkout
+
+
