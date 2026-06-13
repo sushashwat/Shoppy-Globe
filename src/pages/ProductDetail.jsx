@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { addToCart } from '../redux/cartSlice'
+import { useOutletContext } from 'react-router-dom'
 
 /**
  * ProductDetail page: shows detailed info about a single product.
@@ -13,6 +14,7 @@ function ProductDetail() {
     const { id } = useParams()   // Dynamic Route Parameter
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const { showToast } = useOutletContext() // Get showToast from Layout
 
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -83,7 +85,13 @@ function ProductDetail() {
                         </div>
                     </div>
 
-                    <button className="btn btn-primary btn-large" onClick={() => dispatch(addToCart(product))}>
+                    <button
+                        className="btn btn-primary btn-large"
+                        onClick={() => {
+                            dispatch(addToCart(product));
+                            showToast(`✓ "${product.title}" added to cart!`);
+                        }}
+                    >
                         Add to Cart
                     </button>
                     <button className="btn btn-outline btn-large" onClick={() => navigate('/cart')}>

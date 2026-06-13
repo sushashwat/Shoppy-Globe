@@ -1033,6 +1033,59 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+
+.toast-overlay {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: slideUpAmazon 0.4s ease-out;
+}
+
+
+@keyframes slideInDown {
+  from {
+    transform: translate(-50%, -100px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+.toast-message {
+  background: var(--green);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(42, 92, 63, 0.25);
+  animation: fadeOut 0.3s ease-in 2.7s forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* ============================================================
    RESPONSIVE DESIGN
    ============================================================ */
 

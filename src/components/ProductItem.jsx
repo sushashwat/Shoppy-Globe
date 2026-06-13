@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types'
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 
@@ -8,10 +8,12 @@ import { addToCart } from "../redux/cartSlice";
  * ProductItem component represents a single product card in the grid.
  * Props: product object passed from ProductList parent.
  * "Add to Cart" dispatches Redux action.
+ * When clicked, adds to cart and shows toast notification
  */
 
 function ProductItem({ product }) {
     const dispatch = useDispatch()
+    const {showToast} = useOutletContext()  //Get showToast from Layout
 
     function handleAddToCart(e) {
         // Prevent card click navigating to detail when clicking button 
@@ -23,6 +25,9 @@ function ProductItem({ product }) {
             price: product.price,
             thumbnail: product.thumbnail,
         }))
+
+        // Show toast notification
+        showToast(`✓ "${product.title.substring(0, 25)}..." added to cart!`)
     }
 
     const rating = product.rating || 4
@@ -66,7 +71,7 @@ function ProductItem({ product }) {
 
 ProductItem.propTypes = {
     product: PropTypes.shape({
-         id:          PropTypes.number.isRequired,
+    id:          PropTypes.number.isRequired,
     title:       PropTypes.string.isRequired,
     price:       PropTypes.number.isRequired,
     thumbnail:   PropTypes.string.isRequired,
