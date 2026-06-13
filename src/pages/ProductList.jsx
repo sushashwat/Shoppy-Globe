@@ -11,6 +11,16 @@ import {
 import useFetchProducts from '../hooks/useFetchProducts'
 import ProductItem from '../components/ProductItem'
 
+/**
+ * ProductList Page
+ *
+ * - Calls custom hook useFetchProducts (useEffect inside) to load products
+ *   and store them in Redux.
+ * - Search query is stored in Redux state (productsSlice).
+ * - Filtered products derived via Redux selector selectFilteredProducts.
+ * - Each <ProductItem> gets a unique key={product.id} (React Lists requirement).
+ */
+
 function ProductList() {
     const dispatch = useDispatch()
     const searchQuery = useSelector(selectSearchQuery)
@@ -18,9 +28,10 @@ function ProductList() {
     const loading = useSelector(selectProductsLoading)
     const error = useSelector(selectProductsError)
 
-
+  // Custom hook: triggers useEffect fetch, writes to Redux store
     useFetchProducts()
 
+  // ── Skeleton loading state ────────────────────────────────────────────────
     if (loading) {
         return (
             <div className="product-list-page">
@@ -45,6 +56,7 @@ function ProductList() {
         )
     }
 
+  // ── Error state ───────────────────────────────────────────────────────────
     if (error) {
         return (
             <div className="product-list-page">
@@ -56,6 +68,7 @@ function ProductList() {
         )
     }
 
+  // ── Main render ───────────────────────────────────────────────────────────
     return (
         <div className="product-list-page">
             <div className="search-bar-wrap">

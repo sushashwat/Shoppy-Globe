@@ -4,6 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { selectCartItems, selectCartTotal, clearCart } from "../redux/cartSlice";
 import { func } from "prop-types";
 
+/**
+ * Checkout page: dummy form to collect user details + cart summary.
+ * On "Place Order":
+ *   1. Shows "Order placed" message
+ *   2. Clears the cart (Redux clearCart action)
+ *   3. Redirects user to Home page automatically after 2.5s
+ */
+
+
 function Checkout() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -12,6 +21,7 @@ function Checkout() {
     const tax = subtotal * 0.1
     const [ordered, setOrdered] = useState(false)
 
+    //Form State
     const [form, setForm] = useState({
         name: '', email: '', phone: '', address: '', city: '', zip: '',
         card: '', expiry: '', cvv: '',
@@ -23,12 +33,15 @@ function Checkout() {
 
 
     function handlePlaceOrder() {
+        //Show order success message
         setOrdered(true)
+        //Clear the cart via Redux action
         dispatch(clearCart())
+        //Redirect to home page automatically after 2.5 seconds 
         setTimeout(() => navigate('/'), 2500)
     }
 
-
+  // Order success screen
   if (ordered) {
     return (
       <div className="checkout-page">
@@ -48,6 +61,7 @@ function Checkout() {
       <h1 className="page-title">Checkout</h1>
 
       <div className="checkout-grid">
+        {/* // Dummy form to collect user details */}
         <div className="form-section">
           <p className="form-title">Shipping Details</p>
 
@@ -93,14 +107,16 @@ function Checkout() {
               <input className="form-input" name="cvv" value={form.cvv} onChange={handleChange} />
             </div>
           </div>
-
+             {/* Place Order Button */}
           <button className="place-order-btn" onClick={handlePlaceOrder}>
             ✓ Place Order
           </button>
         </div>
 
+       {/* Cart summary on checkout page */}
         <div className="form-section">
           <p className="form-title">Order Summary</p>
+          {/* Cart items list with unique key */}
           {items.map(item => (
             <div key={item.id} className="checkout-summary-item">
               <img className="checkout-item-img" src={item.thumbnail} alt={item.title} loading="lazy" />

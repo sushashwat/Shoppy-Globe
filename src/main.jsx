@@ -5,8 +5,7 @@ import { store } from './redux/store.js'
 import App from './App.jsx'
 import './styles/style.css'
 
-
-
+// Entry point: wrap App in Redux Provider so all components can access the store
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
