@@ -9,6 +9,8 @@ const ProductList  = lazy(() => import('./pages/ProductList'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
 const Cart         = lazy(() => import('./pages/Cart'))
 const Checkout     = lazy(() => import('./pages/Checkout'))
+const Login        = lazy(() => import('./pages/Login'))
+const Register     = lazy(() => import('./pages/Register'))
 const NotFound     = lazy(() => import('./pages/NotFound'))
 
 // Loading fallback shown while lazy components are being fetched
@@ -57,6 +59,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <Checkout />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'login',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'register',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Register />
           </Suspense>
         ),
       },
