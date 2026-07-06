@@ -13,21 +13,21 @@ import { addToCart } from "../redux/cartSlice";
 
 function ProductItem({ product }) {
     const dispatch = useDispatch()
-    const {showToast} = useOutletContext()  //Get showToast from Layout
+    const { showToast } = useOutletContext()  //Get showToast from Layout
 
     function handleAddToCart(e) {
         // Prevent card click navigating to detail when clicking button 
         e.preventDefault()
         e.stopPropagation()
         dispatch(addToCart({
-            id: product.id,
-            title: product.title,
+            id: product._id,
+            title: product.name,
             price: product.price,
-            thumbnail: product.thumbnail,
+            thumbnail: product.imageUrl,
         }))
 
         // Show toast notification
-        showToast(`✓ "${product.title.substring(0, 25)}..." added to cart!`)
+        showToast(`✓ "${product.name.substring(0, 25)}..." added to cart!`)
     }
 
     const rating = product.rating || 4
@@ -37,17 +37,17 @@ function ProductItem({ product }) {
     return (
         <article className="product-card">
             {/* Clicking the card navigates to the product detail page */}
-            <Link to={`/product/${product.id}`} className="product-card-link">
+            <Link to={`/product/${product._id}`} className="product-card-link">
                 {/* Lazy loaded image for performance optimization */}
                 <img
                     className="product-img"
-                    src={product.thumbnail}
-                    alt={product.title}
+                    src={product.imageUrl}
+                    alt={product.name}
                     loading="lazy"
                 />
                 <div className="product-info">
                     <p className="product-category">{product.category}</p>
-                    <h3 className="product-title">{product.title}</h3>
+                    <h3 className="product-title">{product.name}</h3>
                     <p className="product-rating">
                         <span className="stars">{stars}</span>
                         <span className="rating-num">{rating.toFixed(1)}</span>
@@ -71,14 +71,14 @@ function ProductItem({ product }) {
 
 ProductItem.propTypes = {
     product: PropTypes.shape({
-    id:          PropTypes.number.isRequired,
-    title:       PropTypes.string.isRequired,
-    price:       PropTypes.number.isRequired,
-    thumbnail:   PropTypes.string.isRequired,
-    category:    PropTypes.string,
-    rating:      PropTypes.number,
-    description: PropTypes.string,
-    }) .isRequired,
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        price: PropTypes.number.isRequired,
+        imageUrl: PropTypes.string.isRequired,
+        category: PropTypes.string,
+        rating: PropTypes.number,
+        description: PropTypes.string,
+    }).isRequired,
 }
 
 export default ProductItem

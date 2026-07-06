@@ -28,11 +28,12 @@ function ProductDetail() {
             setLoading(true)
             setError(null)
             try {
-                const res = await fetch(`https://dummyjson.com/products/${id}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
                     signal: controller.signal,
                 })
                 if (!res.ok) throw new Error('Product not found')
-                setProduct(await res.json())
+                const result = await res.json()
+                setProduct(result.data)   
             } catch (err) {
                 if (err.name !== 'AbortError') {
                     setError('Failed to load product')
@@ -60,13 +61,13 @@ function ProductDetail() {
             <div className="detail-grid">
                 {/* Product image — lazy loaded */}
                 <div className="detail-img-wrap">
-                    <img className="detail-img" src={product.thumbnail} alt={product.title} loading="lazy" />
+                    <img className="detail-img" src={product.imageUrl} alt={product.name} loading="lazy" />
                 </div>
 
                 {/* Product information */}
                 <div className="detail-info">
                     <p className="detail-category">{product.category}</p>
-                    <h1 className="detail-title">{product.title}</h1>
+                    <h1 className="detail-title">{product.name}</h1>
                     <p className="detail-price">${product.price.toFixed(2)}</p>
                     <p className="detail-desc">{product.description}</p>
 
