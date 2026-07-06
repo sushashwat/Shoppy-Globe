@@ -16,11 +16,11 @@ import {
  * 
  * Fetches the product list from the DummyJSON API on component mount using useEffect.
  * Stores the result directly in redux state via dispatch .
- * Returns products, loading, and error from Redux selectors. 
+ * Returns products, loading, and error from Redux select   ors. 
  * 
  */
 
-function useFetchProducts (url = 'https://dummyjson.com/products?limit=30'){
+function useFetchProducts (url = `${import.meta.env.VITE_API_URL}/products`){
     const dispatch  = useDispatch()
     const products = useSelector(selectAllProducts)
     const loading = useSelector(selectProductsLoading)
@@ -38,7 +38,7 @@ function useFetchProducts (url = 'https://dummyjson.com/products?limit=30'){
                 const res = await fetch(url, {signal: controller.signal})
                 if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
                     const data = await res.json()
-                dispatch(setProducts(data.products || []))
+                dispatch(setProducts(data.data || []))
             } catch (err){
                 // Ignore AbortError - expected on component unmount 
                 if(err.name  !== 'AbortError'){
