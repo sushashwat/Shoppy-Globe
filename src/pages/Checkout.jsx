@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectCartItems, selectCartTotal, clearCartState } from "../redux/cartSlice";
-import { func } from "prop-types";
 
 /**
- * Checkout page: dummy form to collect user details + cart summary.
+ * Checkout page: form to collect user details + cart summary.
  * On "Place Order":
- *   1. Shows "Order placed" message
- *   2. Clears the cart (Redux clearCart action)
- *   3. Redirects user to Home page automatically after 2.5s
+ *   1. Validates that all required fields are filled in
+ *   2. Shows "Order placed" message
+ *   3. Clears the cart (Redux clearCartState action)
+ *   4. Redirects user to Home page automatically after 2.5s
+ *
+ * NOTE: There is currently no backend "orders" endpoint — this only
+ * simulates placing an order and clears the cart. To persist real
+ * orders, a backend Order model + route would be needed.
  */
 
 
@@ -20,6 +24,7 @@ function Checkout() {
     const subtotal = useSelector(selectCartTotal)
     const tax = subtotal * 0.1
     const [ordered, setOrdered] = useState(false)
+    const [formError, setFormError] = useState(null)
 
     //Form State
     const [form, setForm] = useState({
@@ -30,7 +35,6 @@ function Checkout() {
     function handleChange(e) {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
-
 
     function handlePlaceOrder() {
         // Validate: every field must be filled in before we allow an order
@@ -72,51 +76,53 @@ function Checkout() {
     <div className="checkout-page">
       <h1 className="page-title">Checkout</h1>
 
+      {formError && <p className="error-banner">{formError}</p>}
+
       <div className="checkout-grid">
-        {/* // Dummy form to collect user details */}
+        {/* Form to collect user details */}
         <div className="form-section">
           <p className="form-title">Shipping Details</p>
 
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input className="form-input" name="name" value={form.name} onChange={handleChange} />
+            <input className="form-input" name="name" value={form.name} onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label className="form-label">Email</label>
-            <input className="form-input" type="email" name="email" value={form.email} onChange={handleChange} />
+            <input className="form-input" type="email" name="email" value={form.email} onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label className="form-label">Phone</label>
-            <input className="form-input" type="tel" name="phone" value={form.phone} onChange={handleChange} />
+            <input className="form-input" type="tel" name="phone" value={form.phone} onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label className="form-label">Address</label>
-            <input className="form-input" name="address" value={form.address} onChange={handleChange} />
+            <input className="form-input" name="address" value={form.address} onChange={handleChange} required />
           </div>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">City</label>
-              <input className="form-input" name="city" value={form.city} onChange={handleChange} />
+              <input className="form-input" name="city" value={form.city} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label className="form-label">PIN Code</label>
-              <input className="form-input" name="zip" value={form.zip} onChange={handleChange} />
+              <input className="form-input" name="zip" value={form.zip} onChange={handleChange} required />
             </div>
           </div>
 
           <p className="form-title" style={{ marginTop: '1.5rem' }}>Payment</p>
           <div className="form-group">
             <label className="form-label">Card Number</label>
-            <input className="form-input" name="card" value={form.card} onChange={handleChange} />
+            <input className="form-input" name="card" value={form.card} onChange={handleChange} required />
           </div>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Expiry</label>
-              <input className="form-input" name="expiry" value={form.expiry} onChange={handleChange} />
+              <input className="form-input" name="expiry" value={form.expiry} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label className="form-label">CVV</label>
-              <input className="form-input" name="cvv" value={form.cvv} onChange={handleChange} />
+              <input className="form-input" name="cvv" value={form.cvv} onChange={handleChange} required />
             </div>
           </div>
              {/* Place Order Button */}
@@ -130,10 +136,10 @@ function Checkout() {
           <p className="form-title">Order Summary</p>
           {/* Cart items list with unique key */}
           {items.map(item => (
-            <div key={item.id} className="checkout-summary-item">
-              <img className="checkout-item-img" src={item.thumbnail} alt={item.title} loading="lazy" />
-              <span className="checkout-item-name">{item.title} ×{item.qty}</span>
-              <span className="checkout-item-subtotal">${(item.price * item.qty).toFixed(2)}</span>
+            <div key={item._id} className="checkout-summary-item">
+              <img className="checkout-item-img" src={item.product.imageUrl} alt={item.product.name} loading="lazy" />
+              <span className="checkout-item-name">{item.product.name} ×{item.quantity}</span>
+              <span className="checkout-item-subtotal">${(item.product.price * item.quantity).toFixed(2)}</span>
             </div>
           ))}
           <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #ccc' }}>
@@ -148,5 +154,3 @@ function Checkout() {
 }
 
 export default Checkout
-
-
