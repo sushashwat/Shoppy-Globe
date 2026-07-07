@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { selectCartItems, selectCartTotal, clearCart } from "../redux/cartSlice";
+import { selectCartItems, selectCartTotal, clearCartState } from "../redux/cartSlice";
 import { func } from "prop-types";
 
 /**
@@ -33,11 +33,23 @@ function Checkout() {
 
 
     function handlePlaceOrder() {
-        //Show order success message
+        // Validate: every field must be filled in before we allow an order
+        const emptyField = Object.entries(form).find(([, value]) => value.trim() === '')
+        if (emptyField) {
+            setFormError('Please fill in all fields before placing your order.')
+            return
+        }
+        if (items.length === 0) {
+            setFormError('Your cart is empty.')
+            return
+        }
+
+        setFormError(null)
+        // Show order success message
         setOrdered(true)
-        //Clear the cart via Redux action
-        dispatch(clearCart())
-        //Redirect to home page automatically after 2.5 seconds 
+        // Clear the cart via Redux action
+        dispatch(clearCartState())
+        // Redirect to home page automatically after 2.5 seconds
         setTimeout(() => navigate('/'), 2500)
     }
 
