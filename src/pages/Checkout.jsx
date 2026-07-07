@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectCartItems, selectCartTotal, clearCartState } from "../redux/cartSlice";
+import { selectIsAuthenticated } from "../redux/authSlice";
 
 /**
  * Checkout page: form to collect user details + cart summary.
@@ -18,44 +19,50 @@ import { selectCartItems, selectCartTotal, clearCartState } from "../redux/cartS
 
 
 function Checkout() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const items = useSelector(selectCartItems)
-    const subtotal = useSelector(selectCartTotal)
-    const tax = subtotal * 0.1
-    const [ordered, setOrdered] = useState(false)
-    const [formError, setFormError] = useState(null)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const items = useSelector(selectCartItems)
+  const subtotal = useSelector(selectCartTotal)
+  const tax = subtotal * 0.1
+  const [ordered, setOrdered] = useState(false)
+  const [formError, setFormError] = useState(null)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
 
-    //Form State
-    const [form, setForm] = useState({
-        name: '', email: '', phone: '', address: '', city: '', zip: '',
-        card: '', expiry: '', cvv: '',
-    })
+  //Form State
+  const [form, setForm] = useState({
+    name: '', email: '', phone: '', address: '', city: '', zip: '',
+    card: '', expiry: '', cvv: '',
+  })
 
-    function handleChange(e) {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  function handleChange(e) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  function handlePlaceOrder() {
+    // Must be logged in to place an order
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+    // Validate: every field must be filled in before we allow an order
+    const emptyField = Object.entries(form).find(([, value]) => value.trim() === '')
+    if (emptyField) {
+      setFormError('Please fill in all fields before placing your order.')
+      return
+    }
+    if (items.length === 0) {
+      setFormError('Your cart is empty.')
+      return
     }
 
-    function handlePlaceOrder() {
-        // Validate: every field must be filled in before we allow an order
-        const emptyField = Object.entries(form).find(([, value]) => value.trim() === '')
-        if (emptyField) {
-            setFormError('Please fill in all fields before placing your order.')
-            return
-        }
-        if (items.length === 0) {
-            setFormError('Your cart is empty.')
-            return
-        }
-
-        setFormError(null)
-        // Show order success message
-        setOrdered(true)
-        // Clear the cart via Redux action
-        dispatch(clearCartState())
-        // Redirect to home page automatically after 2.5 seconds
-        setTimeout(() => navigate('/'), 2500)
-    }
+    setFormError(null)
+    // Show order success message
+    setOrdered(true)
+    // Clear the cart via Redux action
+    dispatch(clearCartState())
+    // Redirect to home page automatically after 2.5 seconds
+    setTimeout(() => navigate('/'), 2500)
+  }
 
   // Order success screen
   if (ordered) {
@@ -125,13 +132,13 @@ function Checkout() {
               <input className="form-input" name="cvv" value={form.cvv} onChange={handleChange} required />
             </div>
           </div>
-             {/* Place Order Button */}
+          {/* Place Order Button */}
           <button className="place-order-btn" onClick={handlePlaceOrder}>
             ✓ Place Order
           </button>
         </div>
 
-       {/* Cart summary on checkout page */}
+        {/* Cart summary on checkout page */}
         <div className="form-section">
           <p className="form-title">Order Summary</p>
           {/* Cart items list with unique key */}
