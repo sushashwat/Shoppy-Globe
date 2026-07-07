@@ -17,7 +17,7 @@ function authHeaders(getState) {
 
 export const fetchCart = createAsyncThunk(
     'cart/fetchCart',
-    async(_, { getState, rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
             const res = await fetch(`${API_URL}/cart`, {
                 headers: authHeaders(getState),
@@ -89,6 +89,24 @@ export const removeItem = createAsyncThunk(
     }
 )
 
+// DELETE /cart — clear the ENTIRE cart on the backend (used after placing an order)
+export const clearCartOnServer = createAsyncThunk(
+    'cart/clearCartOnServer',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const res = await fetch(`${API_URL}/cart`, {
+                method: 'DELETE',
+                headers: authHeaders(getState),
+            })
+            const result = await res.json()
+            if (!res.ok) throw new Error(result.message || 'Failed to clear cart')
+            return true
+        } catch (err) {
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
 
 const cartSlice = createSlice({
     name: 'cart',
@@ -143,6 +161,13 @@ const cartSlice = createSlice({
                 state.items = state.items.filter(i => i._id !== action.payload)
             })
             .addCase(removeItem.rejected, (state, action) => {
+                state.error = action.payload
+            })
+            // clearCartOnServer
+            .addCase(clearCartOnServer.fulfilled, (state) => {
+                state.items = []
+            })
+            .addCase(clearCartOnServer.rejected, (state, action) => {
                 state.error = action.payload
             })
     },

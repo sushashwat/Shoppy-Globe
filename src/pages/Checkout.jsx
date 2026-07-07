@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { selectCartItems, selectCartTotal, clearCartState } from "../redux/cartSlice";
+import { selectCartItems, selectCartTotal, clearCartOnServer } from "../redux/cartSlice";
 import { selectIsAuthenticated } from "../redux/authSlice";
 
 /**
@@ -59,7 +59,7 @@ function Checkout() {
     // Show order success message
     setOrdered(true)
     // Clear the cart via Redux action
-    dispatch(clearCartState())
+    dispatch(clearCartOnServer())
     // Redirect to home page automatically after 2.5 seconds
     setTimeout(() => navigate('/'), 2500)
   }
