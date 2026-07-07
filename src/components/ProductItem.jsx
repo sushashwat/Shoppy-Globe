@@ -1,30 +1,33 @@
 import React from "react";
 import PropTypes from 'prop-types'
-import { Link, useOutletContext } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
-
+import { Link, useOutletContext, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemToCart } from "../redux/cartSlice";
+import {selectIsAuthenticated} from "../redux/authSlice"
 /**
  * ProductItem component represents a single product card in the grid.
  * Props: product object passed from ProductList parent.
- * "Add to Cart" dispatches Redux action.
- * When clicked, adds to cart and shows toast notification
+ * "Add to Cart" dispatches an async thunk that calls the backend.
+ * Requires the user to be logged in — redirects to /login if not.
  */
 
 function ProductItem({ product }) {
     const dispatch = useDispatch()
-    const { showToast } = useOutletContext()  //Get showToast from Layout
+    const navigate = useNavigate()
+    const isAuthenticated = useSelector(selectIsAuthenticated)
+    const { showToast } = useOutletContext()  //Get showToast    from Layout
 
     function handleAddToCart(e) {
         // Prevent card click navigating to detail when clicking button 
         e.preventDefault()
         e.stopPropagation()
-        dispatch(addToCart({
-            id: product._id,
-            title: product.name,
-            price: product.price,
-            thumbnail: product.imageUrl,
-        }))
+       
+          // Cart is backend-protected — a logged-out user can't add to it
+        if (!isAuthenticated) {
+            navigate('/login')
+            return
+        }
+          dispatch(addItemToCart({ productId: product._id, quantity: 1 }))
 
         // Show toast notification
         showToast(`✓ "${product.name.substring(0, 25)}..." added to cart!`)
@@ -56,7 +59,7 @@ function ProductItem({ product }) {
                 </div>
             </Link>
 
-            {/* Add to Cart button — event handling via Redux dispatch */}
+            {/* Add to Cart button — event handling via Redux async thunk   */}
             <div className="product-card-footer">
                 <button className="btn btn-primary" onClick={handleAddToCart}>
                     Add to Cart

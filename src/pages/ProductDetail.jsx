@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { addToCart } from '../redux/cartSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { addItemToCart } from '../redux/cartSlice'
+import { selectIsAuthenticated } from '../redux/authSlice'
 import { useOutletContext } from 'react-router-dom'
 
 /**
  * ProductDetail page: shows detailed info about a single product.
  * - useParams() reads the dynamic route param :id
- * - useEffect fetches product data when component mounts / id changes
- * - Error handling shows a friendly message on fetch failure
+ * - useEffect fetches product data from our own backend when component mounts / id changes
+ * - "Add to Cart" dispatches an async thunk that calls the backend (requires login)
  */
 function ProductDetail() {
     const { id } = useParams()   // Dynamic Route Parameter
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const isAuthenticated = useSelector(selectIsAuthenticated)
     const { showToast } = useOutletContext() // Get showToast from Layout
 
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // useEffect: fetch product details when component mounts or id changes
+    // useEffect: fetch product details from our backend when component mounts or id changes
     useEffect(() => {
         const controller = new AbortController()
 
@@ -53,6 +55,17 @@ function ProductDetail() {
 
     const rating = product.rating || 4
     const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
+
+      function handleAddToCart() {
+        // Cart is backend-protected — a logged-out user can't add to it
+        if (!isAuthenticated) {
+            navigate('/login')
+            return
+        }
+
+        dispatch(addItemToCart({ productId: product._id, quantity: 1 }))
+        showToast(`✓ "${product.name}" added to cart!`)
+    }
 
     return (
         <div className="detail-page">

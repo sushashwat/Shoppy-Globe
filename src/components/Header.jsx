@@ -1,7 +1,7 @@
 import React from "react"
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
-import { selectCartCount } from '../redux/cartSlice'
+import { clearCartState, selectCartCount } from '../redux/cartSlice'
 import { selectCurrentUser, selectIsAuthenticated, logout } from '../redux/authSlice'
 
 /**
@@ -21,6 +21,7 @@ function Header() {
 
     function handleLogout() {
         dispatch(logout())
+        dispatch(clearCartState())
         navigate('/')
     }
 
