@@ -1,3 +1,4 @@
+> 🔗 Backend repo: [shoppyglobe-backend](https://github.com/sushashwat/shoppyglobe-Backend)
 # ShoppyGlobe — React E-commerce Application
 
 A fully-featured e-commerce app built with **Vite + React**, **Redux Toolkit**, and **React Router v6**.
